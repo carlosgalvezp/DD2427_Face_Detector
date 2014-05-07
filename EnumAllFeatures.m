@@ -15,10 +15,10 @@ p = 0; % Pointer to position in all_ftypes
 %% Enumerate
 % Type I
 disp('Enumerating Features I...');
-for w = 1:W
-    for h = 1:floor(H/2)
-        for x = 1:W-w
-            for y = 1:H-2*h
+for w = 1:W-2
+    for h = 1:floor(H/2)-2
+        for x = 2:W-w
+            for y = 2:H-2*h
                 c = BoxCheck(x,y,w,h,W,H);
                 if c
                     p = p+1;
@@ -31,10 +31,10 @@ end
 
 % Type II
 disp('Enumerating Features II...');
-for w = 1:floor(W/2)
-    for h = 1:H
-        for x = 1:W-2*w
-            for y = 1:H-h
+for w = 1:floor(W/2)-2
+    for h = 1:H-2
+        for x = 2:W-2*w
+            for y = 2:H-h
                 c = BoxCheck(x,y,w,h,W,H);
                 if c                    
                     p = p+1;
@@ -47,10 +47,10 @@ end
 
 % Type III
 disp('Enumerating Features III...');
-for w = 1:floor(W/3)
-    for h = 1:H
-        for x = 1:W-3*w
-            for y = 1:H-h
+for w = 1:floor(W/3)-2
+    for h = 1:H-2
+        for x = 2:W-3*w
+            for y = 2:H-h
                 c = BoxCheck(x,y,w,h,W,H);
                 if c
                     p = p+1;
@@ -63,10 +63,10 @@ end
 
 % Type IV
 disp('Enumerating Features IV...');
-for w = 1:floor(W/2)
-    for h = 1:floor(H/2)
-        for x = 1:W-2*w
-            for y = 1:H-2*h
+for w = 1:floor(W/2)-2
+    for h = 1:floor(H/2)-2
+        for x = 2:W-2*w
+            for y = 2:H-2*h
                 c = BoxCheck(x,y,w,h,W,H);
                 if c                    
                     p = p+1;

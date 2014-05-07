@@ -22,6 +22,8 @@ ii_ims(1,:) = ii_im1(:)';
 
 % Load the rest
 for i=2:ni
+    clc;
+    fprintf('\r Loading images... %d%%',floor(100*i/ni));
     [~,ii_im_tmp] = LoadIm([dirname,face_fnames(fnums(i)).name]);
     ii_ims(i,:) = ii_im_tmp(:)';
 end

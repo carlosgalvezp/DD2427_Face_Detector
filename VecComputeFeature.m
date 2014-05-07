@@ -8,8 +8,6 @@ function fs = VecComputeFeature(ii_ims,ftype_vec)
 % 
 % Author: Carlos Gálvez del Postigo Fernández
 
-size(ii_ims)
-size(ftype_vec)
 fs = ii_ims*ftype_vec;
 
 end

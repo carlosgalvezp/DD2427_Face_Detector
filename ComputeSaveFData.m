@@ -8,7 +8,7 @@ function ComputeSaveFData(all_ftypes,f_sfn)
 % Author: Carlos Gálvez del Postigo Fernández            
 W = 19; 
 H = 19;
-fmat = VecAllFeatures(all_ftypes,W,H);
+fmat = sparse(VecAllFeatures(all_ftypes,W,H));
 
 save(f_sfn, 'fmat','all_ftypes','W','H');
 

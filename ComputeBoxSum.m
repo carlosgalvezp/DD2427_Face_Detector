@@ -19,5 +19,8 @@ end
 
 A = ii_im(y+h-1,x+w-1);
 if x>1 && y>1
-    A = A - ii_im(y-1,x+w-1) - ii_im(y+h-1,x-1) + ii_im(y-1,x-1); 
+    B = ii_im(y-1,x+w-1);
+    C = ii_im(y+h-1,x-1);
+    D = ii_im(y-1,x-1);
+    A = A - B - C + D; 
 end

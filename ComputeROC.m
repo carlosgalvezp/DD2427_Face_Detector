@@ -53,6 +53,7 @@ tpr = zeros(size(ths));
 fpr = zeros(size(ths));
 
 f = figure;
+axis([-0.1 1.1 -0.1 1.1]);
 foundTh = 0;
 for t=1:length(ths)        
     clc

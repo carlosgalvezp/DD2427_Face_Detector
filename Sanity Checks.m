@@ -75,13 +75,14 @@ else
     disp('Test 3.4: Haar-like Feature IV...OK');
 end
 
-
+%% Enumerate features
+all_ftypes = EnumAllFeatures(19,19);
+size(all_ftypes)
 %% ComputeFeatures
 % Read the first 100 images
 N = 100;
 DirName = '../Web Info/TrainingImages/FACES/';
 im_files = dir(DirName);
-size(im_files)
 
 ii_ims = cell(N);
 for i = 1:N
@@ -161,6 +162,8 @@ all_ftypes = dinfo4.all_ftypes;
 im_sfn = 'FaceData.mat';
 f_sfn = 'FeaturesToMat.mat';
 rng(dinfo4.jseed);
+
+dirname = '../Web info/TrainingImages/FACES/';
 LoadSaveImData(dirname,ni,im_sfn);
 ComputeSaveFData(all_ftypes,f_sfn);
 
@@ -178,7 +181,6 @@ end
 
 %% GetTrainingData
 
-fprintf('Getting training data...')
 dinfo5 = load('DebugInfo/debuginfo5.mat');
 np = dinfo5.np;
 nn = dinfo5.nn;
@@ -190,7 +192,7 @@ Fdata = load('FaceData.mat');
 NFdata = load('NonFaceData.mat');
 FTdata = load('FeaturesToUse.mat');
 
-fprintf('OK\n'),
+fprintf('Getting training data...OK');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,17 +244,18 @@ colormap(gray);
 
 %% Boosting Algorithm
 close all
+profile on
 Cparams = BoostingAlg(Fdata,NFdata,FTdata,3);
-
+profile viewer
+%%
 % Display features
+iis={};
 for i=1:size(Cparams.Thetas,1)
    j = Cparams.Thetas(i,1);
    ftype = Cparams.all_ftypes(j,:);
-   figure;
-   imagesc(MakeFeaturePic(ftype,19,19));
-   colormap(gray);
+   iis{i} =MakeFeaturePic(ftype,19,19);
 end
-
+montage(iis);
 % Display classifier
 figure;
 classifier = MakeClassifierPic(Cparams.all_ftypes,...
@@ -284,14 +287,15 @@ T = dinfo7.T;
 
 Cparams = BoostingAlg(Fdata,NFdata,FTdata,T);
 
-% Display features
+%% Display features
+im_classifiers = {};
 for i=1:size(Cparams.Thetas,1)
    j = Cparams.Thetas(i,1);
    ftype = Cparams.all_ftypes(j,:);
-   figure;
-   imagesc(MakeFeaturePic(ftype,19,19));
-   colormap(gray);
+   im_classifiers{i}=MakeFeaturePic(ftype,19,19);
 end
+figure;
+montage(im_classifiers);
 
 % Display classifier
 figure;
@@ -327,5 +331,40 @@ end
 close all, clc;
 ComputeROC(Cparams,Fdata,NFdata);
 
-[min(max(x_t(1) - (x_tm1(1) + u_t(1)),1),5),...
-    min(max(x_t(2) - (x_tm1(2) + u_t(2)),1),5)];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ScanImageFixedSize
+
+im = 'one_chris.png';
+dets = ScanImageFixedSize(Cparams,im);
+
+% DisplayDetections
+DisplayDetections(im,dets);
+fdets = PruneDetections(dets);
+DisplayDetections(im,fdets);
+%% ScanImageOverScale
+
+im = 'big_one_chris.png';
+Cparams2 = Cparams;
+Cparams2.thresh = 8;
+dets = ScanImageOverScale(Cparams2,im,0.6,1.3,0.06);
+
+% DisplayDetections
+DisplayDetections(im,dets);
+fdets = PruneDetections(dets);
+DisplayDetections(im,fdets);
+
+%% Other test
+im = 'facepic2.jpg';
+Cparams2 = Cparams;
+Cparams2.thresh = 8;
+dets = ScanImageOverScale(Cparams2,im,0.6,1.3,0.06);
+
+% DisplayDetections
+DisplayDetections(im,dets);
+fdets = PruneDetections(dets);
+DisplayDetections(im,fdets);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Train super strong classifier
+T = 100;
+Cparams100 = BoostingAlg(Fdata,NFdata,FTdata,T);
