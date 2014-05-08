@@ -21,12 +21,13 @@ end
 if(size(im,3) > 1)
    im = double(rgb2gray(im)); %Convert to grayscale 
 end
-
 %% 2.- Scan over scale
 scales = min_s:step_s:max_s;
 dets = [];
 
 for i=1:length(scales)
+    clc;
+    fprintf('Scanning over scale...%d %%',round(100*(i-1)/length(scales)));
     s = scales(i);
     imS = imresize(im, round(s*size(im)));
     detsS = ScanImageFixedSize(Cparams,imS);

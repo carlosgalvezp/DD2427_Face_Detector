@@ -329,42 +329,64 @@ end
 
 %% ComputeROC
 close all, clc;
-ComputeROC(Cparams,Fdata,NFdata);
+ComputeROC(Cparams100,Fdata,NFdata);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ScanImageFixedSize
-
+clc, close all;
 im = 'one_chris.png';
+Cparams.thresh = 6.5;
+profile on, profile clear
 dets = ScanImageFixedSize(Cparams,im);
-
+profile viewer
 % DisplayDetections
 DisplayDetections(im,dets);
-fdets = PruneDetections(dets);
-DisplayDetections(im,fdets);
+% fdets = PruneDetections(dets);
+% DisplayDetections(im,fdets);
 %% ScanImageOverScale
 
 im = 'big_one_chris.png';
 Cparams2 = Cparams;
 Cparams2.thresh = 8;
+profile on, profile clear
 dets = ScanImageOverScale(Cparams2,im,0.6,1.3,0.06);
-
+profile viewer
 % DisplayDetections
 DisplayDetections(im,dets);
 fdets = PruneDetections(dets);
 DisplayDetections(im,fdets);
 
-%% Other test
-im = 'facepic2.jpg';
-Cparams2 = Cparams;
-Cparams2.thresh = 8;
-dets = ScanImageOverScale(Cparams2,im,0.6,1.3,0.06);
-
-% DisplayDetections
-DisplayDetections(im,dets);
-fdets = PruneDetections(dets);
-DisplayDetections(im,fdets);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Train super strong classifier
 T = 100;
-Cparams100 = BoostingAlg(Fdata,NFdata,FTdata,T);
+Cparams100 = BoostingAlg(Fdata,NFdata,FTdata,T); %Takes around 25 minutes!!
+
+%%
+%% Other test
+clc
+
+% im = 'one_chris.png';
+% im = 'facepic2.jpg';
+% im = 'IMG_0190.jpg';
+% im = 'IMG_0177.jpg';
+% im = 'IMG_0179.jpg';
+% im = 'IMG_0180.jpg';
+% im = 'many_small_chris.png'; %th = 28
+% im = 'IMG_0192.jpg';
+% im = 'IMG_0190.jpg'; %th = 28
+% im = 'IMG_0191.jpg'; %th = 28
+% im = 'IMG_0188.jpg';
+% im = 'Student3.jpg'; %th = 27
+im = 'IMG_0187.jpg';
+Cparams100_2 = Cparams100;
+Cparams100_2.thresh = 27;
+profile on
+dets = ScanImageOverScale(Cparams100_2,im,0.1,0.8,0.025);
+profile viewer
+% DisplayDetections
+DisplayDetections(im,dets);
+%% Prune
+fdets = PruneDetections(dets);
+DisplayDetections(im,fdets);
+

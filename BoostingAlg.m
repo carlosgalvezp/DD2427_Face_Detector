@@ -66,7 +66,7 @@ end
 % Output as struct
 Cparams.alphas = alphas;
 Cparams.Thetas = Thetas;
-Cparams.fmat = FTdata.fmat;
+Cparams.fmat = sparse(FTdata.fmat);
 Cparams.all_ftypes = FTdata.all_ftypes;
 
 end
