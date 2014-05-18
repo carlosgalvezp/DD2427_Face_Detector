@@ -14,8 +14,9 @@ if ischar(im)
     im = imread(im);    
 end
 if(size(im,3) > 1)
-   im = double(rgb2gray(im)); %Convert to grayscale 
+   im = rgb2gray(im); %Convert to grayscale 
 end
+im = double(im);
 ii_im = cumsum(cumsum(im,1),2);
 ii_im2 = cumsum(cumsum(im.*im,1),2);
 
@@ -29,15 +30,18 @@ N_MAX_FACES = 1000;
 chosen_f = Cparams.Thetas(:,1); %Tx1
 thetas = Cparams.Thetas(:,2); %Tx1
 pars = Cparams.Thetas(:,3); %Tx1
+parsxthetas = pars.*thetas; %Tx1
+
 alphas = Cparams.alphas; %Tx1
 all_ftypes = Cparams.all_ftypes;
 fmatT = (Cparams.fmat(:,chosen_f))';
 indexes1 = find(all_ftypes(chosen_f,1)==3);
 indexes2 = all_ftypes(chosen_f,1) == 3;
+wh = all_ftypes(chosen_f(indexes1),4).*all_ftypes(chosen_f(indexes1),5);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Pre-allocation
-dets = zeros(N_MAX_FACES,4);
+dets = zeros(N_MAX_FACES,5);
 z = 0; %Number of detected faces
 for i=2:size(im,1)-L+1
     for j=2:size(im,2)-L+1        
@@ -49,28 +53,20 @@ for i=2:size(im,1)-L+1
         sigma = sqrt((ii_im2(i+L-1,j+L-1) - ...
                  ii_im2(i+L-1,j-1) -...
                  ii_im2(i-1,j+L-1) + ...
-                 ii_im2(i-1,j-1) - L2*mu^2)/(L2-1));
-        %%----------------Apply detector1------------
-        %Get sub-window
-%         subImage = im(i:i+L-1,j:j+L-1);
-%         if sigma ~=0
-%             subImageOK = (subImage-mu)/sigma;
-%         end
-%         sub_ii_imOK = cumsum(cumsum(subImageOK,1),2);
-%         fOK = Cparams.fmat(:,chosen_f)'*sub_ii_imOK(:); %Tx1
-%         sc = alphas' * (pars.*f < pars.*thetas);
-        %%-------------------------------------------
-        
+                 ii_im2(i-1,j-1) - L2*mu^2)/(L2-1));                
         %------------Apply detector2-----------------
+        %         sc = ApplyDetector2(Cparams,sub_ii_im,mu,sigma);
         sub_ii_im = ii_im(i:i+L-1,j:j+L-1);
-%         sc = ApplyDetector2(Cparams,sub_ii_im,mu,sigma);
         f = fmatT*sub_ii_im(:)/sigma; %Tx1 
-        f(indexes2) = f(indexes2) + all_ftypes(chosen_f(indexes1),4).*all_ftypes(chosen_f(indexes1),5)*mu/sigma;        
-        sc = alphas' * (pars.*f < pars.*thetas);
+        f(indexes2) = f(indexes2) + wh*mu/sigma;        
+        sc = alphas' * (pars.*f < parsxthetas);
         %--------------------------------------------
         if sc > Cparams.thresh
             z = z+1;
-            dets(z,:) = [j,i,L,L];
+            dets(z,:) = [j,i,L,L,sc];
+            if z == N_MAX_FACES
+                return
+            end
         end
     end
 end

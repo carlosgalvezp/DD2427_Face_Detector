@@ -287,6 +287,13 @@ T = dinfo7.T;
 
 Cparams = BoostingAlg(Fdata,NFdata,FTdata,T);
 
+%% Boosting algorithm. Profile
+close all;
+profile on; profile clear;
+T = 10;
+BoostingAlg(Fdata,NFdata,FTdata,10);
+profile viewer;
+
 %% Display features
 im_classifiers = {};
 for i=1:size(Cparams.Thetas,1)
@@ -328,12 +335,12 @@ end
 
 
 %% ComputeROC
-close all, clc;
+clc;
 ComputeROC(Cparams100,Fdata,NFdata);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ScanImageFixedSize
-clc, close all;
+clc;
 im = 'one_chris.png';
 Cparams.thresh = 6.5;
 profile on, profile clear
@@ -341,8 +348,8 @@ dets = ScanImageFixedSize(Cparams,im);
 profile viewer
 % DisplayDetections
 DisplayDetections(im,dets);
-% fdets = PruneDetections(dets);
-% DisplayDetections(im,fdets);
+fdets = PruneDetections(dets);
+DisplayDetections(im,fdets);
 %% ScanImageOverScale
 
 im = 'big_one_chris.png';
@@ -364,29 +371,33 @@ Cparams100 = BoostingAlg(Fdata,NFdata,FTdata,T); %Takes around 25 minutes!!
 
 %%
 %% Other test
-clc
+close all, clc
 
-% im = 'one_chris.png';
-% im = 'facepic2.jpg';
-% im = 'IMG_0190.jpg';
-% im = 'IMG_0177.jpg';
-% im = 'IMG_0179.jpg';
-% im = 'IMG_0180.jpg';
-% im = 'many_small_chris.png'; %th = 28
-% im = 'IMG_0192.jpg';
-% im = 'IMG_0190.jpg'; %th = 28
-% im = 'IMG_0191.jpg'; %th = 28
-% im = 'IMG_0188.jpg';
-% im = 'Student3.jpg'; %th = 27
-im = 'IMG_0187.jpg';
+dirname = '../Web info/TestImages/';
+face_fnames = dir(dirname);
+
 Cparams100_2 = Cparams100;
-Cparams100_2.thresh = 27;
-profile on
-dets = ScanImageOverScale(Cparams100_2,im,0.1,0.8,0.025);
-profile viewer
-% DisplayDetections
-DisplayDetections(im,dets);
-%% Prune
-fdets = PruneDetections(dets);
-DisplayDetections(im,fdets);
+Cparams100_2.thresh = 28;
+smin = 0.01; %0.01
+smax = 0.5; %0.5
+sstep = 0.01; %0.01
+for i=3:length(face_fnames)    
+    im =[dirname,face_fnames(i).name];
+    fprintf('Processing %s...',i);
+    dets = ScanImageOverScale(Cparams100_2,im,smin,smax,sstep);
+    DisplayDetections(im,dets);
+%     % Prune
+%     fdets = PruneDetections(dets);
+%     DisplayDetections(im,fdets);
+end
 
+%% Special case for "many_faces"
+im = 'big_many_faces.jpg';
+Cparams100_2 = Cparams100;
+Cparams100_2.thresh = 28;
+smin = 0.1;
+smax = 0.7;
+sstep = 0.1;
+
+dets = ScanImageOverScale(Cparams100_2,im,smin,smax,sstep);
+DisplayDetections(im,dets);

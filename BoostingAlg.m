@@ -11,6 +11,10 @@ function Cparams = BoostingAlg(Fdata, NFdata, FTdata, T)
 %             -Cparams.fmat
 %             -CParams.all_ftypes
 % Author: Carlos Gálvez del Postigo Fernández            
+%% Performance: turn into sparse matrix
+if ~issparse(FTdata.fmat)
+    FTdata.fmat = sparse(FTdata.mat);
+end
       
 %% 1.- Initialize weights
 
@@ -32,6 +36,8 @@ alphas = zeros(T,1);
 %% 2.- For each weak classifier
 
 for t=1:T
+    clc
+    fprintf('Boosting...%d %%',floor(100*((t-1)/T)));
    % Normalize weights
    w = w/sum(w,1);
    
@@ -43,8 +49,6 @@ for t=1:T
    fss = zeros(n,Nfeatures);
    
    for j=1:Nfeatures
-       clc
-       fprintf('Boosting...%d %%',floor(100*((t-1)*Nfeatures + j)/(T*Nfeatures)));
        fss(:,j) = Data*FTdata.fmat(:,j);
        [thetas(j),pars(j),eps(j)] = LearnWeakClassifier(w,fss(:,j),y);
    end

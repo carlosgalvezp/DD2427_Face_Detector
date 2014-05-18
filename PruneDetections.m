@@ -29,7 +29,10 @@ end
 % Create new dets
 fdets = zeros(S,4);
 for i=1:S
-    fdets(i,:) = mean(dets(C==i,:),1); %Take the average of them    
+    fdetsSame = dets(C==i,:); %nx5
+    scores = fdetsSame(:,5);  %nx1
+    fdets(i,:) = sum(fdetsSame(:,1:4).*repmat(scores,[1,4])/sum(scores)); %Weighted average
+%     fdets(i,:) = mean(dets(C==i,:),1); %Take the average of them  (CHANGE TO WEIGHTED AVERAGE)      
 end
 end
 

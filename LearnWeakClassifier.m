@@ -11,9 +11,14 @@ function [theta, p, err] = LearnWeakClassifier(ws, fs, ys)
 % Author: Carlos Gálvez del Postigo Fernández            
 
 % 1.- Compute weighted mean for positive and negative examples
-mu_P = ws(ys==1)' * fs(ys==1) / sum(ws(ys==1),1);
-mu_N = ws(ys==0)' * fs(ys==0) / sum(ws(ys==0),1);
-
+ys1 = ys==1;
+ys0 = ~ys1;
+sum1 = sum(ws(ys1),1);
+sum0 = 1-sum1;
+% mu_P = ws(ys==1)' * fs(ys==1) / sum(ws(ys==1),1);
+% mu_N = ws(ys==0)' * fs(ys==0) / sum(ws(ys==0),1);
+mu_P = ws(ys1)' * fs(ys1) / sum1;
+mu_N = ws(ys0)' * fs(ys0) / sum0;
 % 2.- Set threshold
 theta = 0.5 * (mu_P + mu_N);
 

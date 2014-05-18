@@ -31,7 +31,7 @@ for i=1:length(scales)
     s = scales(i);
     imS = imresize(im, round(s*size(im)));
     detsS = ScanImageFixedSize(Cparams,imS);
-    dets = [dets; round(detsS/s)];
+    dets = [dets; round([(detsS(:,1:2)-1)/s+1 detsS(:,3:4)/s]) detsS(:,5)];
 end
 
 end
